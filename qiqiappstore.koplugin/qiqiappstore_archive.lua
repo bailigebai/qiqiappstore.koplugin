@@ -99,6 +99,13 @@ local function tokens(source)
                 local finish = source:find("[\r\n]", i + 2)
                 i = finish or (#source + 1)
             end
+        elseif char == "[" and source:match("^%[(=*)%[", i) then
+            local equals = source:match("^%[(=*)%[", i)
+            local close = "]" .. equals .. "]"
+            local finish = source:find(close, i + 2 + #equals, true)
+            -- Keep long-string contents opaque; embedded code examples are not fields.
+            result[#result + 1] = { kind = "longstring" }
+            i = finish and (finish + #close) or (#source + 1)
         elseif char == "\"" or char == "'" then
             local value, next_i = decode_quoted(source, i)
             if value ~= nil then result[#result + 1] = { kind = "string", value = value } end
@@ -371,6 +378,51 @@ local function fail_with_cleanup(fs, stage, message)
     return false, message
 end
 
+-- Conservative fallback for KOReader's usual `local P = Base:extend{...}; return P`.
+-- Unsupported/dynamic declarations stay unverified instead of being evaluated.
+local function read_entry_name(source)
+    if type(source) ~= "string" then return nil end
+    local parsed = tokens(source)
+    local last = #parsed
+    while last > 0 and parsed[last].kind == ";" do last = last - 1 end
+    if last < 2 or parsed[last - 1].value ~= "return" or parsed[last].kind ~= "identifier" then return nil end
+    local object = parsed[last].value
+    local result, declarations = nil, 0
+    for index = 1, last - 8 do
+        if parsed[index].value == "local" and parsed[index + 1].value == object
+            and parsed[index + 2].kind == "=" and parsed[index + 3].kind == "identifier"
+            and parsed[index + 4].kind == ":" and parsed[index + 5].value == "extend"
+            and parsed[index + 6].kind == "{" then
+            declarations = declarations + 1
+            local depth, fields = 1, 0
+            for cursor = index + 7, last - 2 do
+                local field, previous = parsed[cursor], parsed[cursor - 1]
+                if depth == 1 and field.kind == "["
+                    and (previous.kind == "{" or previous.kind == "," or previous.kind == ";") then
+                    -- A computed key could overwrite name; leave it unverified.
+                    return nil
+                end
+                if depth == 1 and field.kind == "identifier" and field.value == "name"
+                    and (previous.kind == "{" or previous.kind == "," or previous.kind == ";") then
+                    fields = fields + 1
+                    local equal, value, following = parsed[cursor + 1], parsed[cursor + 2], parsed[cursor + 3]
+                    if equal and equal.kind == "=" and value and value.kind == "string"
+                        and following and (following.kind == "," or following.kind == ";" or following.kind == "}") then
+                        result = value.value
+                    else
+                        return nil
+                    end
+                end
+                if field.kind == "{" then depth = depth + 1 end
+                if field.kind == "}" then depth = depth - 1 end
+                if depth == 0 then break end
+            end
+            if fields ~= 1 or depth ~= 0 then return nil end
+        end
+    end
+    if declarations == 1 then return result end
+end
+
 function Archive.install(reader, info, dest_root, opts)
     opts = opts or {}
     local fs = opts.fs or default_fs()
@@ -423,10 +475,21 @@ function Archive.install(reader, info, dest_root, opts)
             return false, "Existing target cannot be identified safely; _meta.lua is missing or unreadable."
         end
         local existing_name = Archive.readMeta(existing_source).name
-        if not existing_name or existing_name == "" then
-            return false, "Existing target cannot be identified safely because metadata has no literal name."
-        end
         local incoming_name = archive_meta.name or info.plugin_name
+        if not existing_name or existing_name == "" then
+            -- KOReader allows _meta.lua to omit name (e.g. pluginhealth 0.1.2).
+            -- Never execute main.lua or trust the directory alone: require both
+            -- entry points to declare the same literal ID as the target directory.
+            local directory_id = info.plugin_dirname:gsub("%.koplugin$", "")
+            local existing_main = fs.readFile(join(target, "main.lua"))
+            local incoming_main = reader:extractToMemory(main_path)
+            local old_id = read_entry_name(existing_main)
+            local new_id = read_entry_name(incoming_main)
+            if old_id ~= directory_id or new_id ~= directory_id or incoming_name ~= directory_id then
+                return false, "无法安全确认已有插件身份：元数据缺少名称，且新旧入口名称与目录不一致。原插件未修改。"
+            end
+            existing_name = directory_id
+        end
         if not incoming_name or incoming_name == "" or existing_name ~= incoming_name then
             return false, "Installation target belongs to a different plugin: " .. existing_name
         end

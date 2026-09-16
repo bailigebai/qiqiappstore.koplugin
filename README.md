@@ -1,12 +1,18 @@
 # qiqi 应用商店 · qiqiappstore.koplugin
 
-版本：0.1.0。用于 KOReader，仅展示 GitHub 账号 **bailigebai** 下名称以 **`.koplugin`** 结尾的公开项目。
+版本：0.1.1。用于 KOReader，仅展示 GitHub 账号 **bailigebai** 下名称以 **`.koplugin`** 结尾的公开项目。
 
 后续上传的新插件符合上述命名规则后，在商店点“刷新缓存”即可发现，无须修改商店代码。不要求 topics、星标，也支持该账号的公开 fork；名称如 `demo.koplugin.zip` 不会被纳入。
 
+## v0.1.1 修复
+
+修复安装或重装 pluginhealth 0.1.2 时出现“Existing target cannot be identified safely because metadata has no literal name”的错误。原因是合法插件可能只在 main.lua 声明名称。新版本在元数据缺少名称时，交叉核对新旧入口文件的静态名称和目标目录，保留拒绝误覆盖、配置保留和回滚保护。
+
+遇到此错误，请先手动覆盖升级 qiqi 应用商店至 v0.1.1，重启后再安装健康管家。无需删除健康管家，也不需要重置它的设置。
+
 ## 解压安装
 
-1. 下载 [qiqiappstore.koplugin-v0.1.0.zip](https://github.com/bailigebai/qiqiappstore.koplugin/raw/refs/heads/main/downloads/qiqiappstore.koplugin-v0.1.0.zip)，解压得到 `qiqiappstore.koplugin` 文件夹。
+1. 下载 [qiqiappstore.koplugin-v0.1.1.zip](https://github.com/bailigebai/qiqiappstore.koplugin/raw/refs/heads/main/downloads/qiqiappstore.koplugin-v0.1.1.zip)，解压得到 `qiqiappstore.koplugin` 文件夹。
 2. 将整个文件夹放入设备的 `koreader/plugins/` 目录。Kindle 常见位置为 `/mnt/us/koreader/plugins/`；请以设备实际 KOReader 目录为准。
 3. 检查最终路径是 `koreader/plugins/qiqiappstore.koplugin/main.lua`。不要多套一层同名目录，也不要直接放 ZIP。
 4. 完全退出并重新启动 KOReader，在主菜单中找到“qiqi 应用商店”（英文环境为 qiqi App Store）。
@@ -53,10 +59,6 @@ GitHub 请求失败或限流时保留原项目缓存，稍后刷新重试。可�
 
 ## 开发与来源
 
-本仓库发布所附 v0.1.0 安装包及其对应运行源码。开发测试记录不在安装包内；此处未修改包内代码。使用 GitHub 的 Code → Download ZIP 时，只复制仓库内的 `qiqiappstore.koplugin` 文件夹到设备 plugins 目录。
+本仓库包含已发布安装包及对应运行源码。v0.1.1 修复旧健康管家缺少元数据名称导致的覆盖安装失败；开发环境完整 16 次测试运行通过。
 
 基于 [omer-faruq/appstore.koplugin](https://github.com/omer-faruq/appstore.koplugin) 1.14.0 定制，沿用 GPL-3.0。作者版权、参考提交与改动说明见 [UPSTREAM.md](UPSTREAM.md)，完整许可证见 [LICENSE](LICENSE)。
-
-## 下载校验
-
-原始安装包 SHA-256：`3f7e3b2269721da23509b57ed262da62dd82f7f10a7a3ca179eaad5352a12f23`。
