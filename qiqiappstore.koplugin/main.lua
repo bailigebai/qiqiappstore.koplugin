@@ -8958,7 +8958,7 @@ downloadToFile = function(url, local_path)
             ["User-Agent"] = socketutil.USER_AGENT,
             ["Accept"] = "application/zip, application/octet-stream",
         },
-    }, file, socketutil.FILE_BLOCK_TIMEOUT, socketutil.FILE_TOTAL_TIMEOUT)
+    }, file, socketutil.FILE_BLOCK_TIMEOUT, 300) -- Large repository snapshots may exceed KOReader's 60-second default.
 
     -- socketutil.file_sink closes the handle at end of stream and on its own timeout, and
     -- nowhere else: a read timeout mid-transfer, a handshake failure, or a throw all leave it
