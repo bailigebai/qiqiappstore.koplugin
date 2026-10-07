@@ -1,8 +1,14 @@
 # qiqi 应用商店 · qiqiappstore.koplugin
 
-版本：0.1.2。用于 KOReader，仅展示 GitHub 账号 **bailigebai** 下名称以 **`.koplugin`** 结尾的公开项目。
+版本：0.1.3。用于 KOReader，仅展示 GitHub 账号 **bailigebai** 下名称以 **`.koplugin`** 结尾的公开项目。
 
 后续上传的新插件符合上述命名规则后，在商店点“刷新缓存”即可发现，无须修改商店代码。不要求 topics、星标，也支持该账号的公开 fork；名称如 `demo.koplugin.zip` 不会被纳入。
+
+## v0.1.3 TLS 连接超时修复
+
+处理下载安装包时的 `wantread` / `wantwrite` / `timeout`：文件下载的单次连接等待从 15 秒延长至 45 秒，仅对上述临时网络超时自动重试一次。两次尝试共用 300 秒下载预算，重试重新创建文件，避免拼接损坏的 ZIP；HTTP 错误、证书错误和 `sink timeout` 不自动重试。沿用当前选择的下载来源，不修改 KOReader 的全局网络参数。
+
+升级后完全退出并重启 KOReader，再下载 Legado 或其他插件。持续超时请检查 Wi-Fi，或在商店设置的“下载来源”中选择自己可用的来源。电脑能下载不表示阅读器所在网络一定能访问 GitHub 发布附件节点；未在 Kindle 上完成此修复的真机验收。
 
 ## v0.1.2 下载超时修复
 
@@ -16,7 +22,7 @@
 
 ## 解压安装
 
-1. 下载 [qiqiappstore.koplugin-v0.1.2.zip](https://github.com/bailigebai/qiqiappstore.koplugin/releases/download/v0.1.2/qiqiappstore.koplugin-v0.1.2.zip)，解压得到 `qiqiappstore.koplugin` 文件夹。
+1. 下载 [qiqiappstore.koplugin-v0.1.3.zip](https://github.com/bailigebai/qiqiappstore.koplugin/releases/download/v0.1.3/qiqiappstore.koplugin-v0.1.3.zip)，解压得到 `qiqiappstore.koplugin` 文件夹。
 2. 将整个文件夹放入设备的 `koreader/plugins/` 目录。Kindle 常见位置为 `/mnt/us/koreader/plugins/`；请以设备实际 KOReader 目录为准。
 3. 检查最终路径是 `koreader/plugins/qiqiappstore.koplugin/main.lua`。不要多套一层同名目录，也不要直接放 ZIP。
 4. 完全退出并重新启动 KOReader，在主菜单中找到“qiqi 应用商店”（英文环境为 qiqi App Store）。
@@ -63,8 +69,8 @@ GitHub 请求失败或限流时保留原项目缓存，稍后刷新重试。可�
 
 ## 开发与来源
 
-本仓库包含已发布安装包及对应运行源码。v0.1.2 发布前在 Lua 5.1、LuaJIT 2.1 共完成 18 组测试，包内 Lua 语法、模块完整性、可重复打包和凭据排除检查通过。慢速下载回归测试见 `tests/download_timeout_test.lua`，可在仓库根目录用 Lua 5.1 或 LuaJIT 执行。
+本仓库包含已发布安装包及对应运行源码。v0.1.3 发布前在 Lua 5.1、LuaJIT 2.1 共完成 20 组测试，包内 Lua 语法、模块完整性、可重复打包和凭据排除检查通过。文件下载回归测试见 `tests/download_timeout_test.lua`、`tests/tls_download_test.lua`，可在仓库根目录用 Lua 5.1 或 LuaJIT 执行。
 
-新版本下载最长可等待 5 分钟；下载失败仍会清理不完整文件。真实 Kindle 网络环境尚待使用者验收。
+详细验证记录见 [v0.1.3-verification.md](docs/v0.1.3-verification.md)。Kindle 真机网络环境仍需验收。
 
 基于 [omer-faruq/appstore.koplugin](https://github.com/omer-faruq/appstore.koplugin) 1.14.0 定制，沿用 GPL-3.0。作者版权、参考提交与改动说明见 [UPSTREAM.md](UPSTREAM.md)，完整许可证见 [LICENSE](LICENSE)。

@@ -18,7 +18,7 @@ setfenv(loader,env)
 local download=loader()
 local ok,err=download("https://api.github.com/repos/bailigebai/legado.koplugin/zipball/HEAD","/tmp/plugin.zip")
 assert(ok, "an active 90-second archive transfer must succeed: "..tostring(err))
-assert(observed.total==300 and observed.block==15,"only file total budget changes; keep bounded idle wait")
+assert(observed.total==300 and observed.block==45,"keep finite total and connection budgets")
 assert(closed and not removed,"successful file must be closed and retained")
 elapsed=301; removed=false;closed=false
 assert(not download("https://example.test/file.zip","/tmp/plugin.zip"))

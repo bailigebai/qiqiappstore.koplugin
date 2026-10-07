@@ -8944,46 +8944,45 @@ downloadToFile = function(url, local_path)
     if dir and dir ~= "" then
         util.makePath(dir)
     end
+    -- The sink budget and the TLS/socket wait are distinct. A release redirect
+    -- opens another TLS connection, which can exceed the default 15-second wait.
+    -- Retry only transient GET failures, once, inside the original 5-minute budget.
+    local deadline = os.time() + 300
+    local last_error
+    for attempt = 1, 2 do
+        local remaining = deadline - os.time()
+        if remaining <= 0 then return false, last_error or "sink timeout" end
+        local file, err = io.open(local_path, "wb")
+        if not file then
+            return false, err or "failed to open file for writing"
+        end
+        local code, headers, status = Net.requestToFile({
+            url = url,
+            method = "GET",
+            redirect = true,
+            headers = {
+                ["User-Agent"] = socketutil.USER_AGENT,
+                ["Accept"] = "application/zip, application/octet-stream",
+            },
+        }, file, math.min(45, remaining), remaining)
 
-    local file, err = io.open(local_path, "wb")
-    if not file then
-        return false, err or "failed to open file for writing"
-    end
-
-    local code, headers, status = Net.requestToFile({
-        url = url,
-        method = "GET",
-        redirect = true,
-        headers = {
-            ["User-Agent"] = socketutil.USER_AGENT,
-            ["Accept"] = "application/zip, application/octet-stream",
-        },
-    }, file, socketutil.FILE_BLOCK_TIMEOUT, 300) -- Large repository snapshots may exceed KOReader's 60-second default.
-
-    -- socketutil.file_sink closes the handle at end of stream and on its own timeout, and
-    -- nowhere else: a read timeout mid-transfer, a handshake failure, or a throw all leave it
-    -- open. Closing here covers every exit; where the sink got there first, the second close
-    -- raises and the pcall absorbs it.
-    pcall(file.close, file)
-
-    if code == socketutil.TIMEOUT_CODE
-        or code == socketutil.SSL_HANDSHAKE_CODE
-        or code == socketutil.SINK_TIMEOUT_CODE then
+        -- The sink may already have closed the handle. Also close on handshake
+        -- and mid-stream errors before deleting or reopening the partial archive.
+        pcall(file.close, file)
+        if code == 200 and headers then return true end
         util.removeFile(local_path)
-        return false, status or code or "timeout"
-    end
 
-    if not headers then
-        util.removeFile(local_path)
-        return false, status or code or "network error"
+        local reason = code or status
+        local transient = reason == "wantread" or reason == "wantwrite"
+            or reason == socketutil.TIMEOUT_CODE
+        last_error = status or code or "network error"
+        if transient then
+            last_error = "下载连接等待超时（" .. tostring(reason)
+                .. "）。请检查网络，或在商店设置中选择可用的下载来源后重试。"
+        end
+        if not transient or attempt == 2 then return false, last_error end
     end
-
-    if code ~= 200 then
-        util.removeFile(local_path)
-        return false, status or tostring(code)
-    end
-
-    return true
+    return false, last_error
 end
 
 local function detectPluginFromArchive(reader, repo)

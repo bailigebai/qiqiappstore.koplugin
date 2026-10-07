@@ -1,8 +1,14 @@
 # qiqi 应用商店 · qiqiappstore.koplugin
 
-版本：0.1.2。用于 KOReader，仅展示 GitHub 账号 **bailigebai** 下名称以 **`.koplugin`** 结尾的公开项目。
+版本：0.1.3。用于 KOReader，仅展示 GitHub 账号 **bailigebai** 下名称以 **`.koplugin`** 结尾的公开项目。
 
 后续上传的新插件符合上述命名规则后，在商店点“刷新缓存”即可发现，无须修改商店代码。不要求 topics、星标，也支持该账号的公开 fork；名称如 `demo.koplugin.zip` 不会被纳入。
+
+## v0.1.3 TLS 连接超时修复
+
+处理下载安装包时的 `wantread` / `wantwrite` / `timeout`：文件下载的单次连接等待从 15 秒延长至 45 秒，仅对上述临时网络超时自动重试一次。两次尝试共用 300 秒下载预算，重试重新创建文件，避免拼接损坏的 ZIP；HTTP 错误、证书错误和 `sink timeout` 不自动重试。沿用当前选择的下载来源，不修改 KOReader 的全局网络参数。
+
+升级后完全退出并重启 KOReader，再下载 Legado 或其他插件。持续超时请检查 Wi-Fi，或在商店设置的“下载来源”中选择自己可用的来源。电脑能下载不表示阅读器所在网络一定能访问 GitHub 发布附件节点；未在 Kindle 上完成此修复的真机验收。
 
 ## v0.1.2 下载超时修复
 
@@ -16,7 +22,7 @@
 
 ## 解压安装
 
-1. 下载 `qiqiappstore.koplugin-v0.1.2.zip`，解压得到 `qiqiappstore.koplugin` 文件夹。
+1. 下载 `qiqiappstore.koplugin-v0.1.3.zip`，解压得到 `qiqiappstore.koplugin` 文件夹。
 2. 将整个文件夹放入设备的 `koreader/plugins/` 目录。Kindle 常见位置为 `/mnt/us/koreader/plugins/`；请以设备实际 KOReader 目录为准。
 3. 检查最终路径是 `koreader/plugins/qiqiappstore.koplugin/main.lua`。不要多套一层同名目录，也不要直接放 ZIP。
 4. 完全退出并重新启动 KOReader，在主菜单中找到“qiqi 应用商店”（英文环境为 qiqi App Store）。
