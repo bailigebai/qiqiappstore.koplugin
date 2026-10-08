@@ -1,8 +1,14 @@
 # qiqi 应用商店 · qiqiappstore.koplugin
 
-版本：0.1.6。用于 KOReader，仅展示 GitHub 账号 **bailigebai** 下名称以 **`.koplugin`** 结尾的公开项目。
+版本：0.1.7。用于 KOReader，仅展示 GitHub 账号 **bailigebai** 下名称以 **`.koplugin`** 结尾的公开项目。
 
 后续上传的新插件符合上述命名规则后，在商店点“刷新缓存”即可发现，无须修改商店代码。不要求 topics、星标，也支持该账号的公开 fork；名称如 `demo.koplugin.zip` 不会被纳入。
+
+## v0.1.7 地址错误与连接中断恢复
+
+补齐下载器对 `Cannot assign requested address`（连接地址无法分配）、`Connection reset by peer`（连接被断开）及底层对应的 `closed` 的恢复处理。此前这些错误会直接停止；现在按现有下载计划尝试同一安装包的其他官方入口，单一来源最多重新连接一次。失败先关闭并删除临时文件，每次从头下载，仍核对 ZIP 大小与 SHA-256，共用五分钟预算。错误提示保留具体原因和下载入口，区分连接错误与超时。
+
+已核验 WebDAVManga 与 Legado 当前发布 ZIP 及对应 raw 副本的大小、摘要和 CRC 一致。这两条设备报错出现在商店下载阶段，尚无证据表明插件代码或安装包损坏。请手动覆盖升级商店并完全重启，再选择对应 ZIP 安装包重试；设备端实际地址分配/连接中断的原因仍需真机确认。
 
 ## v0.1.6 下载与更新路线修复
 
@@ -50,7 +56,7 @@ GitHub 直连下的仓库源码下载改为访问官方 `codeload.github.com` ZI
 
 ## 解压安装
 
-1. 下载 [qiqiappstore.koplugin-v0.1.6.zip](https://raw.githubusercontent.com/bailigebai/qiqiappstore.koplugin/main/downloads/qiqiappstore.koplugin-v0.1.6.zip)，解压得到 `qiqiappstore.koplugin` 文件夹。
+1. 下载 [qiqiappstore.koplugin-v0.1.7.zip](https://raw.githubusercontent.com/bailigebai/qiqiappstore.koplugin/main/downloads/qiqiappstore.koplugin-v0.1.7.zip)，解压得到 `qiqiappstore.koplugin` 文件夹。
 2. 将整个文件夹放入设备的 `koreader/plugins/` 目录。Kindle 常见位置为 `/mnt/us/koreader/plugins/`；请以设备实际 KOReader 目录为准。
 3. 检查最终路径是 `koreader/plugins/qiqiappstore.koplugin/main.lua`。不要多套一层同名目录，也不要直接放 ZIP。
 4. 完全退出并重新启动 KOReader，在主菜单中找到“qiqi 应用商店”（英文环境为 qiqi App Store）。

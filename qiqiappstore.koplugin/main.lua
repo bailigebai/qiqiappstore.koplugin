@@ -8950,7 +8950,8 @@ downloadToFile = function(url, local_path)
     end
     -- The sink budget and the TLS/socket wait are distinct. A release redirect
     -- opens another TLS connection, which can exceed the default 15-second wait.
-    -- Retry only transient GET failures, once, inside the original 5-minute budget.
+    -- Try each exact-version endpoint, or retry a single endpoint once, inside
+    -- the original 5-minute budget. Never append a failed transfer's bytes.
     local deadline = now() + 300
     local last_error
     for attempt = 1, math.max(2,#urls) do
@@ -8986,13 +8987,16 @@ downloadToFile = function(url, local_path)
         util.removeFile(local_path)
 
         local reason = code or status
+        local connection_error = type(reason) == 'string' and
+            (reason:lower() == 'cannot assign requested address' or reason:lower() == 'connection reset by peer'
+                or reason:lower() == 'closed') -- LuaSocket's ECONNRESET / ECONNABORTED mapping.
         local transient = reason == "wantread" or reason == "wantwrite"
-            or reason == socketutil.TIMEOUT_CODE
+            or reason == socketutil.TIMEOUT_CODE or connection_error
         local alternate = attempt < #urls and (transient or reason=='sink timeout' or reason=='invalid package'
             or reason==403 or reason==404 or reason==429 or reason==502 or reason==503 or reason==504)
         last_error = status or code or "network error"
         if transient then
-            last_error = "下载连接等待超时（" .. tostring(reason)
+            last_error = (connection_error and "下载连接失败（" or "下载连接等待超时（") .. tostring(reason)
                 .. "）。下载入口：" .. (url:match("^https?://([^/?#]+)") or "未知")
                 .. "。请检查网络，或在商店设置中选择可用的下载来源后重试。"
         end

@@ -1,0 +1,166 @@
+[
+  {
+    "repo": "webdavmanga.koplugin",
+    "latest_tag": "v0.4.18",
+    "release_updated_at": "2026-10-08T10:24:48Z",
+    "tree_sha": "fd7e1b61bcd486c951a69f296627f4b1472a5da3",
+    "truncated": false,
+    "assets": [
+      {
+        "name": "webdavmanga-repair-0.4.18-graydither-0.3.1.zip",
+        "id": 621477843,
+        "size": 918001,
+        "digest": "sha256:9b6160323809e15102cae20c7c09e9b9be8bae308dd3781aa3bf663dee00dc4c",
+        "browser_download_url": "https://github.com/bailigebai/webdavmanga.koplugin/releases/download/v0.4.18/webdavmanga-repair-0.4.18-graydither-0.3.1.zip",
+        "raw_matches": [
+          "downloads/webdavmanga-repair-0.4.18-graydither-0.3.1.zip"
+        ],
+        "downloads": [
+          {
+            "kind": "raw",
+            "url": "https://raw.githubusercontent.com/bailigebai/webdavmanga.koplugin/fd7e1b61bcd486c951a69f296627f4b1472a5da3/downloads/webdavmanga-repair-0.4.18-graydither-0.3.1.zip",
+            "status": 200,
+            "final_host": "raw.githubusercontent.com",
+            "bytes": 918001,
+            "sha256": "9b6160323809e15102cae20c7c09e9b9be8bae308dd3781aa3bf663dee00dc4c",
+            "matches_release_digest": true,
+            "seconds": 2.14,
+            "bad_crc": null,
+            "plugin_roots": [
+              "graydither.koplugin",
+              "webdavmanga.koplugin"
+            ],
+            "metadata": {
+              "graydither.koplugin": "local _ = require(\"gettext\")\nreturn {\n    name = \"graydither\",\n    fullname = _(\"漫画灰度与墨水屏刷新\"),\n    description = _(\"漫画灰度抖动与墨水屏刷新；支持 MangaWeb、WebDAV 内置阅读器独立开关，默认关闭。设备测试版。\"),\n    version = \"0.3.1\",\n}\n",
+              "webdavmanga.koplugin": "local _ = require(\"gettext\")\n\nreturn {\n    fullname = _(\"WebDAV 漫画\"),\n    description = _([[浏览 WebDAV 上的漫画目录并逐页流式阅读图片。]]),\n    version = \"0.4.18\",\n}\n"
+            }
+          },
+          {
+            "kind": "api_asset",
+            "url": "https://api.github.com/repos/bailigebai/webdavmanga.koplugin/releases/assets/621477843",
+            "status": 200,
+            "final_host": "release-assets.githubusercontent.com",
+            "bytes": 918001,
+            "sha256": "9b6160323809e15102cae20c7c09e9b9be8bae308dd3781aa3bf663dee00dc4c",
+            "matches_release_digest": true,
+            "seconds": 8.485,
+            "bad_crc": null,
+            "plugin_roots": [
+              "graydither.koplugin",
+              "webdavmanga.koplugin"
+            ],
+            "metadata": {
+              "graydither.koplugin": "local _ = require(\"gettext\")\nreturn {\n    name = \"graydither\",\n    fullname = _(\"漫画灰度与墨水屏刷新\"),\n    description = _(\"漫画灰度抖动与墨水屏刷新；支持 MangaWeb、WebDAV 内置阅读器独立开关，默认关闭。设备测试版。\"),\n    version = \"0.3.1\",\n}\n",
+              "webdavmanga.koplugin": "local _ = require(\"gettext\")\n\nreturn {\n    fullname = _(\"WebDAV 漫画\"),\n    description = _([[浏览 WebDAV 上的漫画目录并逐页流式阅读图片。]]),\n    version = \"0.4.18\",\n}\n"
+            }
+          }
+        ]
+      },
+      {
+        "name": "webdavmanga.koplugin-v0.4.18-20261008-cache-size-fix.zip",
+        "id": 621477837,
+        "size": 874527,
+        "digest": "sha256:7dce1c8c3c23f42f81f17d5f2a3d676a5672cb92d65e861f3066c67cfb7961c1",
+        "browser_download_url": "https://github.com/bailigebai/webdavmanga.koplugin/releases/download/v0.4.18/webdavmanga.koplugin-v0.4.18-20261008-cache-size-fix.zip",
+        "raw_matches": [
+          "downloads/webdavmanga.koplugin-v0.4.18-20261008-cache-size-fix.zip"
+        ],
+        "downloads": [
+          {
+            "kind": "raw",
+            "url": "https://raw.githubusercontent.com/bailigebai/webdavmanga.koplugin/fd7e1b61bcd486c951a69f296627f4b1472a5da3/downloads/webdavmanga.koplugin-v0.4.18-20261008-cache-size-fix.zip",
+            "status": 200,
+            "final_host": "raw.githubusercontent.com",
+            "bytes": 874527,
+            "sha256": "7dce1c8c3c23f42f81f17d5f2a3d676a5672cb92d65e861f3066c67cfb7961c1",
+            "matches_release_digest": true,
+            "seconds": 2.609,
+            "bad_crc": null,
+            "plugin_roots": [
+              "webdavmanga.koplugin"
+            ],
+            "metadata": {
+              "webdavmanga.koplugin": "local _ = require(\"gettext\")\n\nreturn {\n    fullname = _(\"WebDAV 漫画\"),\n    description = _([[浏览 WebDAV 上的漫画目录并逐页流式阅读图片。]]),\n    version = \"0.4.18\",\n}\n"
+            }
+          },
+          {
+            "kind": "api_asset",
+            "url": "https://api.github.com/repos/bailigebai/webdavmanga.koplugin/releases/assets/621477837",
+            "status": 200,
+            "final_host": "release-assets.githubusercontent.com",
+            "bytes": 874527,
+            "sha256": "7dce1c8c3c23f42f81f17d5f2a3d676a5672cb92d65e861f3066c67cfb7961c1",
+            "matches_release_digest": true,
+            "seconds": 4.484,
+            "bad_crc": null,
+            "plugin_roots": [
+              "webdavmanga.koplugin"
+            ],
+            "metadata": {
+              "webdavmanga.koplugin": "local _ = require(\"gettext\")\n\nreturn {\n    fullname = _(\"WebDAV 漫画\"),\n    description = _([[浏览 WebDAV 上的漫画目录并逐页流式阅读图片。]]),\n    version = \"0.4.18\",\n}\n"
+            }
+          }
+        ]
+      }
+    ],
+    "catalog_tag_matches": true,
+    "catalog_tree_matches": true
+  },
+  {
+    "repo": "legado.koplugin",
+    "latest_tag": "v0.10.53",
+    "release_updated_at": "2026-10-08T10:37:41Z",
+    "tree_sha": "4d66042701bfb7014b9f2da5e76ea30c66d1d15e",
+    "truncated": false,
+    "assets": [
+      {
+        "name": "legado.koplugin-v0.10.53-20261008.zip",
+        "id": 621512250,
+        "size": 572593,
+        "digest": "sha256:8023b7d668385e87397c32a588ea1c18febecd1bf3269b30bd5473afcf0ee558",
+        "browser_download_url": "https://github.com/bailigebai/legado.koplugin/releases/download/v0.10.53/legado.koplugin-v0.10.53-20261008.zip",
+        "raw_matches": [
+          "downloads/legado.koplugin-v0.10.53-20261008.zip"
+        ],
+        "downloads": [
+          {
+            "kind": "raw",
+            "url": "https://raw.githubusercontent.com/bailigebai/legado.koplugin/4d66042701bfb7014b9f2da5e76ea30c66d1d15e/downloads/legado.koplugin-v0.10.53-20261008.zip",
+            "status": 200,
+            "final_host": "raw.githubusercontent.com",
+            "bytes": 572593,
+            "sha256": "8023b7d668385e87397c32a588ea1c18febecd1bf3269b30bd5473afcf0ee558",
+            "matches_release_digest": true,
+            "seconds": 2.484,
+            "bad_crc": null,
+            "plugin_roots": [
+              "legado.koplugin"
+            ],
+            "metadata": {
+              "legado.koplugin": "return {\r\n    name = \"legado\",\r\n    fullname = \"不亦阅乎\",\n    description = \"从“工具 → 不亦阅乎”打开书架、搜索和书源管理。\",\n    version = \"0.10.53\",\n}\r\n"
+            }
+          },
+          {
+            "kind": "api_asset",
+            "url": "https://api.github.com/repos/bailigebai/legado.koplugin/releases/assets/621512250",
+            "status": 200,
+            "final_host": "release-assets.githubusercontent.com",
+            "bytes": 572593,
+            "sha256": "8023b7d668385e87397c32a588ea1c18febecd1bf3269b30bd5473afcf0ee558",
+            "matches_release_digest": true,
+            "seconds": 2.453,
+            "bad_crc": null,
+            "plugin_roots": [
+              "legado.koplugin"
+            ],
+            "metadata": {
+              "legado.koplugin": "return {\r\n    name = \"legado\",\r\n    fullname = \"不亦阅乎\",\n    description = \"从“工具 → 不亦阅乎”打开书架、搜索和书源管理。\",\n    version = \"0.10.53\",\n}\r\n"
+            }
+          }
+        ]
+      }
+    ],
+    "catalog_tag_matches": true,
+    "catalog_tree_matches": true
+  }
+]

@@ -126,5 +126,41 @@ local parts = {}
 assert(Net.requestToTable({ url = "https://api.github.com/example" }, parts) == "sink timeout")
 assert(#parts == 0)
 assertDefaults()
+
+-- Join the actual wrapper to the actual download helper, rather than assuming
+-- how pcall translates a native error into code/status. Platform I/O is fake.
+local source = assert(io.open('main.lua', 'rb')):read('*a'):gsub('\r\n', '\n')
+local body = assert(source:match('downloadToFile = function%(url, local_path%)(.-)\nend\n'))
+local env = setmetatable({Net=Net,socketutil=socketutil}, {__index=_G})
+env.Mirror = {apply=function(value)return value end}
+local opened, removed, attempts = {}, false, 0
+env.util = {makePath=function()end, removeFile=function()removed=true end}
+env.io = {open=function(_,mode)
+    assert(mode=='wb');local file=openFile();opened[#opened+1]=file;return file
+end}
+env.InstallHelpers = {Packages={verify=function()return opened[#opened].body=='valid ZIP' end}}
+local loader = assert(loadstring('return function(url,local_path)'..body..'\nend'))
+setfenv(loader,env)
+local download = loader()
+for _,reason in ipairs({'Cannot assign requested address','Connection reset by peer','closed'}) do
+    for _,exception in ipairs({false,true}) do
+        clock=1000;opened={};removed=false;attempts=0
+        http.request=function(request)
+            attempts=attempts+1
+            if attempts==1 then
+                request.sink('partial ZIP');clock=clock+15
+                if exception then error(reason,0) end
+                return nil,reason
+            end
+            assert(opened[1].closed and removed, 'close and remove the failed file before switching')
+            request.sink('valid ZIP');request.sink(nil)
+            return 1,200,{},'HTTP/1.1 200 OK'
+        end
+        assert(download({urls={'https://raw.githubusercontent.com/plugin.zip',
+            'https://api.github.com/release-asset'}},'/tmp/plugin.zip'))
+        assert(attempts==2 and #opened==2 and opened[2].closed)
+        assertDefaults()
+    end
+end
 os.time = real_time
 print("Net integration: real KOReader sinks, 90/300/301 seconds, socket budgets and exception reset checked")

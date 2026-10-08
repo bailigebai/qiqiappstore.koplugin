@@ -1,0 +1,249 @@
+[
+  {
+    "repo": "graydither.koplugin",
+    "assets": [
+      {
+        "name": "graydither-0.3.1.zip",
+        "id": 621477699,
+        "size": 38522,
+        "digest": "sha256:e02e48ea959080dcee14b3832160819bcf06c80d08f30f75e1871ce65839a5e9",
+        "attempts": [
+          {
+            "kind": "raw",
+            "url": "https://raw.githubusercontent.com/bailigebai/graydither.koplugin/cc24c3bcd73f8abd8e3af7006e6f41c4f3dccab5/downloads/graydither-0.3.1.zip",
+            "status": 200,
+            "final_host": "raw.githubusercontent.com",
+            "bytes": 38522,
+            "sha256": "e02e48ea959080dcee14b3832160819bcf06c80d08f30f75e1871ce65839a5e9",
+            "seconds": 1.25,
+            "bad_crc": null,
+            "plugin_roots": [
+              "graydither.koplugin"
+            ],
+            "unsafe_paths": [],
+            "verified": true
+          }
+        ],
+        "verified": true
+      }
+    ],
+    "release_status": 200,
+    "latest_tag": "v0.3.1",
+    "catalog_tag_matches": true
+  },
+  {
+    "repo": "ink2048.koplugin",
+    "assets": [],
+    "release_status": 404,
+    "no_published_release": true
+  },
+  {
+    "repo": "legado.koplugin",
+    "assets": [
+      {
+        "name": "legado.koplugin-v0.10.53-20261008.zip",
+        "id": 621512250,
+        "size": 572593,
+        "digest": "sha256:8023b7d668385e87397c32a588ea1c18febecd1bf3269b30bd5473afcf0ee558",
+        "attempts": [
+          {
+            "kind": "raw",
+            "url": "https://raw.githubusercontent.com/bailigebai/legado.koplugin/4d66042701bfb7014b9f2da5e76ea30c66d1d15e/downloads/legado.koplugin-v0.10.53-20261008.zip",
+            "status": 200,
+            "final_host": "raw.githubusercontent.com",
+            "bytes": 572593,
+            "sha256": "8023b7d668385e87397c32a588ea1c18febecd1bf3269b30bd5473afcf0ee558",
+            "seconds": 1.39,
+            "bad_crc": null,
+            "plugin_roots": [
+              "legado.koplugin"
+            ],
+            "unsafe_paths": [],
+            "verified": true
+          }
+        ],
+        "verified": true
+      }
+    ],
+    "release_status": 200,
+    "latest_tag": "v0.10.53",
+    "catalog_tag_matches": true
+  },
+  {
+    "repo": "mangaweb.koplugin",
+    "assets": [
+      {
+        "name": "mangaweb-0.8.84.zip",
+        "id": 620883104,
+        "size": 195649,
+        "digest": "sha256:927970796954119c00ef41270750fb97f2b23b81f397237e90c2a7dd94772cc6",
+        "attempts": [
+          {
+            "kind": "raw",
+            "url": "https://raw.githubusercontent.com/bailigebai/mangaweb.koplugin/cc7c5ce1a3b2046a97a4d1821ea86cd646f1644d/downloads/mangaweb-0.8.84.zip",
+            "status": 200,
+            "final_host": "raw.githubusercontent.com",
+            "bytes": 195649,
+            "sha256": "927970796954119c00ef41270750fb97f2b23b81f397237e90c2a7dd94772cc6",
+            "seconds": 1.281,
+            "bad_crc": null,
+            "plugin_roots": [
+              "mangaweb.koplugin"
+            ],
+            "unsafe_paths": [],
+            "verified": true
+          }
+        ],
+        "verified": true
+      }
+    ],
+    "release_status": 200,
+    "latest_tag": "v0.8.84",
+    "catalog_tag_matches": true
+  },
+  {
+    "repo": "pinyinqiehuan.koplugin",
+    "assets": [
+      {
+        "name": "pinyinqiehuan.koplugin-v1.0.0.zip",
+        "id": 588050484,
+        "size": 62888513,
+        "digest": "sha256:41b2a9114882742f46eeb3f026709fa08a4a0bad68a61b623073053ceb0d70b4",
+        "attempts": [
+          {
+            "kind": "api_asset",
+            "url": "https://api.github.com/repos/bailigebai/pinyinqiehuan.koplugin/releases/assets/588050484",
+            "status": 200,
+            "final_host": "release-assets.githubusercontent.com",
+            "bytes": 62888513,
+            "sha256": "41b2a9114882742f46eeb3f026709fa08a4a0bad68a61b623073053ceb0d70b4",
+            "seconds": 42.781,
+            "bad_crc": null,
+            "plugin_roots": [
+              "pinyinqiehuan.koplugin"
+            ],
+            "unsafe_paths": [],
+            "verified": true
+          }
+        ],
+        "verified": true
+      }
+    ],
+    "release_status": 200,
+    "latest_tag": "v1.0.0",
+    "catalog_tag_matches": true
+  },
+  {
+    "repo": "pluginhealth.koplugin",
+    "assets": [],
+    "release_status": 404,
+    "no_published_release": true
+  },
+  {
+    "repo": "qiqiappstore.koplugin",
+    "assets": [
+      {
+        "name": "qiqiappstore.koplugin-v0.1.6.zip",
+        "id": 622067884,
+        "size": 217125,
+        "digest": "sha256:1722f21cc8e23b7c3daa2d9b4f0ec0c1961cc028e94b510c4d55b2a628269d1c",
+        "attempts": [
+          {
+            "kind": "raw",
+            "url": "https://raw.githubusercontent.com/bailigebai/qiqiappstore.koplugin/3f30c0e2638df62de9ba923805d9582b8de3012c/downloads/qiqiappstore.koplugin-v0.1.6.zip",
+            "status": 200,
+            "final_host": "raw.githubusercontent.com",
+            "bytes": 217125,
+            "sha256": "1722f21cc8e23b7c3daa2d9b4f0ec0c1961cc028e94b510c4d55b2a628269d1c",
+            "seconds": 1.219,
+            "bad_crc": null,
+            "plugin_roots": [
+              "qiqiappstore.koplugin"
+            ],
+            "unsafe_paths": [],
+            "verified": true
+          }
+        ],
+        "verified": true
+      }
+    ],
+    "release_status": 200,
+    "latest_tag": "v0.1.6",
+    "catalog_tag_matches": true
+  },
+  {
+    "repo": "smartambientlight.koplugin",
+    "assets": [],
+    "release_status": 404,
+    "no_published_release": true
+  },
+  {
+    "repo": "sokoban.koplugin",
+    "assets": [],
+    "release_status": 404,
+    "no_published_release": true
+  },
+  {
+    "repo": "webdavmanga.koplugin",
+    "assets": [
+      {
+        "name": "webdavmanga-repair-0.4.18-graydither-0.3.1.zip",
+        "id": 621477843,
+        "size": 918001,
+        "digest": "sha256:9b6160323809e15102cae20c7c09e9b9be8bae308dd3781aa3bf663dee00dc4c",
+        "attempts": [
+          {
+            "kind": "raw",
+            "url": "https://raw.githubusercontent.com/bailigebai/webdavmanga.koplugin/fd7e1b61bcd486c951a69f296627f4b1472a5da3/downloads/webdavmanga-repair-0.4.18-graydither-0.3.1.zip",
+            "status": 200,
+            "final_host": "raw.githubusercontent.com",
+            "bytes": 918001,
+            "sha256": "9b6160323809e15102cae20c7c09e9b9be8bae308dd3781aa3bf663dee00dc4c",
+            "seconds": 2.641,
+            "bad_crc": null,
+            "plugin_roots": [
+              "graydither.koplugin",
+              "webdavmanga.koplugin"
+            ],
+            "unsafe_paths": [],
+            "verified": true
+          }
+        ],
+        "verified": true
+      },
+      {
+        "name": "webdavmanga.koplugin-v0.4.18-20261008-cache-size-fix.zip",
+        "id": 621477837,
+        "size": 874527,
+        "digest": "sha256:7dce1c8c3c23f42f81f17d5f2a3d676a5672cb92d65e861f3066c67cfb7961c1",
+        "attempts": [
+          {
+            "kind": "raw",
+            "url": "https://raw.githubusercontent.com/bailigebai/webdavmanga.koplugin/fd7e1b61bcd486c951a69f296627f4b1472a5da3/downloads/webdavmanga.koplugin-v0.4.18-20261008-cache-size-fix.zip",
+            "status": 200,
+            "final_host": "raw.githubusercontent.com",
+            "bytes": 874527,
+            "sha256": "7dce1c8c3c23f42f81f17d5f2a3d676a5672cb92d65e861f3066c67cfb7961c1",
+            "seconds": 2.75,
+            "bad_crc": null,
+            "plugin_roots": [
+              "webdavmanga.koplugin"
+            ],
+            "unsafe_paths": [],
+            "verified": true
+          }
+        ],
+        "verified": true
+      }
+    ],
+    "release_status": 200,
+    "latest_tag": "v0.4.18",
+    "catalog_tag_matches": true
+  },
+  {
+    "repo": "wuziqi.koplugin",
+    "assets": [],
+    "release_status": 404,
+    "no_published_release": true
+  }
+]

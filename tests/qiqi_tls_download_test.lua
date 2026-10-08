@@ -47,12 +47,24 @@ for _, code in ipairs({ "wantwrite", "timeout" }) do
     assert(run({ { code = code }, { code = 200, headers = {} } }))
     assert(#calls == 2)
 end
+for _, code in ipairs({ "Cannot assign requested address", "Connection reset by peer", "closed" }) do
+    assert(run({ { code = code }, { code = 200, headers = {}, body = "valid ZIP" } }),
+        "a single selected endpoint must allow one fresh connection after: " .. code)
+    assert(#calls == 2 and calls[1].url == calls[2].url and opens[1].closed)
+    assert(disk == "valid ZIP", "a reset transfer must never append to its partial response")
+    ok, err = run({ { code = code }, { code = code } })
+    assert(not ok and #calls == 2 and removed and disk == nil)
+    assert(err:find(code, 1, true), "preserve the actual address or reset error")
+    assert(not err:find("等待超时", 1, true), "address/reset failures are not timeout errors")
+    assert(not run({ { code = code, elapsed = 300 } }))
+    assert(#calls == 1 and opens[1].closed and removed, "connection recovery must respect the shared deadline")
+end
 assert(run({ { status = "wantread" }, { code = 200, headers = {} } }), "request exceptions reported as status can also be transient")
 
 ok, err = run({ { code = "wantread" }, { code = "wantread" } })
 assert(not ok and #calls == 2 and removed and disk == nil)
 assert(err:find("wantread", 1, true), "retain the network reason in the visible error")
-for _, code in ipairs({ 403, 404, "sink timeout", "certificate verify failed" }) do
+for _, code in ipairs({ 403, 404, "sink timeout", "certificate verify failed", "invalid argument" }) do
     assert(not run({ { code = code, headers = {}, status = tostring(code) } }))
     assert(#calls == 1 and removed and opens[1].closed, "do not replay HTTP, certificate or exhausted-sink errors")
 end
