@@ -1,0 +1,37 @@
+name: Refresh public plugin catalog
+
+on:
+  schedule:
+    - cron: '17 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: public-plugin-catalog
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Build complete public catalog
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python scripts/build_catalog.py --output catalog.json
+      - name: Publish catalog only
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- catalog.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'Refresh public plugin catalog'
+            git push origin HEAD:main
+          fi

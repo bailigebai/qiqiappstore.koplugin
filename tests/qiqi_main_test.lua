@@ -1,4 +1,3 @@
-package.path = 'qiqiappstore.koplugin/?.lua;' .. package.path
 -- Only KOReader's platform/UI boundary is substituted. Execute actual main methods.
 local shown, writes, rows = {}, {}, {}
 local settings={readSetting=function()end,saveSetting=function()end,flush=function()end}
@@ -22,7 +21,7 @@ local specials={['device']=device,['ui/uimanager']=ui,['qiqiappstore_gettext']=t
  ['qiqiappstore_plugin_paths']={getLookupPaths=function()return {}end},
  ['qiqiappstore_archive']={readMeta=function()return {}end},
  ['ui/network/manager']={runWhenOnline=function(_,fn)return fn()end}}
-local source=assert(io.open('qiqiappstore.koplugin/main.lua','rb')):read('*a')
+local source=assert(io.open('main.lua','rb')):read('*a')
 for name in source:gmatch('require%(["\']([^"\']+)["\']%)') do
     if name~='qiqiappstore_policy' and name~='qiqiappstore_scope' then
         local stub=specials[name] or widget
@@ -30,7 +29,7 @@ for name in source:gmatch('require%(["\']([^"\']+)["\']%)') do
     end
 end
 G_reader_settings=settings
-local Store=assert(loadfile('qiqiappstore.koplugin/main.lua'))()
+local Store=assert(loadfile('main.lua'))()
 local app=Store:extend{}
 assert(app.name=='qiqiappstore')
 local menu={};app:addToMainMenu(menu)

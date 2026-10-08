@@ -15,23 +15,27 @@ function Scope.attach(Store, deps)
         if not fresh and repo.qiqi_layout then return repo.qiqi_layout end
         local metadata, err = GitHub.fetchRepoMetadata(Policy.owner, repo.name)
         if type(metadata) ~= 'table' then
+            repo.qiqi_download_tree = nil
             repo.qiqi_layout = nil
             repo.qiqi_inspection_error = true
             repo.qiqi_status = '仓库信息校验失败：' .. GitHub.describeError(err) .. '\n可点击“重试检查”。'
             return nil, err
         end
         repo.qiqi_inspection_error = nil
-        if metadata.private ~= false or not Policy.accepts(metadata) then
+        if metadata.private ~= false or not Policy.accepts(metadata) or metadata.name:lower()~=repo.name:lower() then
+            repo.qiqi_download_tree = nil
             repo.qiqi_layout = nil
             repo.qiqi_status = '项目不再是本账号下的公开插件项目，不能安装。'
             return nil
         end
         local tree, tree_err = GitHub.fetchRepoTree(Policy.owner, repo.name, metadata.default_branch or 'HEAD')
         local layout, reason = Policy.pluginFromTree(tree, repo.name)
+        repo.qiqi_download_tree = layout and tree or nil
         repo.qiqi_layout, repo.qiqi_status = layout, reason
         repo.qiqi_commit = tree and tree.sha
         if tree_err or type(tree) ~= 'table' or tree.truncated or type(tree.tree) ~= 'table' then
             repo.qiqi_layout = nil
+            repo.qiqi_download_tree = nil
             repo.qiqi_inspection_error = true
             repo.qiqi_status = '安装文件检查失败：' .. GitHub.describeError(tree_err or '文件列表不完整') .. '\n可点击“重试检查”。'
             return nil, tree_err
@@ -61,14 +65,14 @@ function Scope.attach(Store, deps)
             on_progress=function(page)self:reportRefreshProgress(math.min(0.4,page*0.02))end,
         }
         if not repos then
-            if not self:refreshCancelled() then error(err or '无法读取账号仓库列表。') end
+            if not self:refreshCancelled() then error(err or '无法读取账号仓库列表。',0) end
             return 0, false
         end
         for i, repo in ipairs(repos) do
             if self:refreshCancelled() then return 0, false end
             local tree, tree_err = GitHub.fetchRepoTree(Policy.owner, repo.name, repo.default_branch or 'HEAD')
             if not tree or tree_err or tree.truncated or type(tree.tree) ~= 'table' then
-                error(tree_err or '项目文件列表不完整，已保留原缓存。')
+                error(type(tree_err)=='table' and GitHub.describeError(tree_err) or tree_err or '项目文件列表不完整，已保留原缓存。',0)
             end
             repo.qiqi_layout, repo.qiqi_status = Policy.pluginFromTree(tree, repo.name)
             if repo.qiqi_layout then

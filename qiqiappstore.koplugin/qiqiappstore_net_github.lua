@@ -95,6 +95,36 @@ function GitHubClient.describeError(err)
     return '无法读取 GitHub 数据，请检查网络后重试。'
 end
 
+local catalog_until = 0
+local function cachedCatalog()
+    if os.time() < catalog_until then return require('qiqiappstore_catalog').load() end
+end
+
+local function fallbackCatalog(code, body, headers)
+    headers = type(headers)=='table' and headers or {}
+    local rate = code==429 or (code==403 and (tostring(headers['x-ratelimit-remaining'])=='0'
+        or tostring(body):lower():find('rate limit',1,true)))
+    local temporary = code=='timeout' or code=='wantread' or code=='wantwrite' or code=='sink timeout'
+        or code==502 or code==503 or code==504
+    if not rate and not temporary then return nil end
+    local entries,err = require('qiqiappstore_catalog').load()
+    if entries then catalog_until=os.time()+60 end
+    return entries,err
+end
+
+local function cachedEntry(name)
+    for _,entry in ipairs(cachedCatalog() or {}) do
+        if entry.metadata.name==name then return entry end
+    end
+end
+
+local function fallbackEntry(name, code, body, headers)
+    local entries = fallbackCatalog(code,body,headers)
+    for _,entry in ipairs(entries or {}) do
+        if entry.metadata.name==name then return entry end
+    end
+end
+
 local function buildQuery(opts)
     local query_parts = {}
     if opts.q and opts.q ~= "" then
@@ -128,12 +158,25 @@ end
 
 function GitHubClient.listAccountRepositories(opts)
     opts = opts or {}
+    if opts.should_stop and opts.should_stop() then return nil,'已取消刷新。' end
+    local snapshot=cachedCatalog()
+    if snapshot then
+        local repos={};for _,entry in ipairs(snapshot) do repos[#repos+1]=entry.metadata end
+        return repos
+    end
     local collected, seen, page = {}, {}, 1
     while true do
         if opts.should_stop and opts.should_stop() then return nil, '已取消刷新。' end
-        local code, body = request('/users/' .. Policy.owner .. '/repos',
+        local code, body, headers = request('/users/' .. Policy.owner .. '/repos',
             'type=owner&sort=full_name&direction=asc&per_page=100&page=' .. page)
-        if code ~= 200 then return nil, 'GitHub 请求失败：' .. tostring(code) end
+        if code ~= 200 then
+            local entries = fallbackCatalog(code,body,headers)
+            if entries then
+                local repos={};for _,entry in ipairs(entries) do repos[#repos+1]=entry.metadata end
+                return repos
+            end
+            return nil, GitHubClient.describeError{code=code,body=body,headers=headers}
+        end
         local ok, entries = pcall(json.decode, body)
         if not ok or type(entries) ~= 'table' then return nil, 'GitHub 返回的数据无法解析。' end
         for key in pairs(entries) do
@@ -212,6 +255,8 @@ end
 
 function GitHubClient.fetchRepoTree(owner, repo, ref)
     if not Policy.allows(owner, repo) then return nil, '不属于本商店的插件项目。' end
+    local snapshot=cachedEntry(repo)
+    if snapshot and (not ref or ref=='HEAD' or ref==snapshot.metadata.default_branch or ref==snapshot.tree.sha) then return snapshot.tree end
     if not owner or not repo then
         return nil, "missing owner/repo"
     end
@@ -220,6 +265,10 @@ function GitHubClient.fetchRepoTree(owner, repo, ref)
     local code, body, headers = request(path, "recursive=1")
     if code ~= 200 then
         logger.warn("GitHub fetch tree error", owner .. "/" .. repo, ref, code, body)
+        local entry=fallbackEntry(repo,code,body,headers)
+        if entry and (ref=='HEAD' or ref==entry.metadata.default_branch or ref==entry.tree.sha) then
+            return entry.tree
+        end
         return nil, { code = code, body = body, headers = headers }
     end
     local ok, parsed = pcall(json.decode, body)
@@ -232,6 +281,8 @@ end
 
 function GitHubClient.fetchRepoMetadata(owner, repo)
     if not Policy.allows(owner, repo) then return nil, '不属于本商店的插件项目。' end
+    local snapshot=cachedEntry(repo)
+    if snapshot then return snapshot.metadata end
     if not owner or not repo then
         return nil, "missing owner/repo"
     end
@@ -239,6 +290,8 @@ function GitHubClient.fetchRepoMetadata(owner, repo)
     local code, body, headers = request(path)
     if code ~= 200 then
         logger.warn("GitHub fetch repo metadata error", owner .. "/" .. repo, code, body)
+        local entry=fallbackEntry(repo,code,body,headers)
+        if entry then return entry.metadata end
         return nil, { code = code, body = body, headers = headers }
     end
     local ok, parsed = pcall(json.decode, body)
@@ -251,14 +304,18 @@ end
 
 function GitHubClient.fetchLatestRelease(owner, repo)
     if not Policy.allows(owner, repo) then return nil, '不属于本商店的插件项目。' end
+    local snapshot=cachedEntry(repo)
+    if snapshot then return snapshot.release or nil end
     if not owner or not repo then
         return nil, "missing owner/repo"
     end
     local path = string.format("/repos/%s/%s/releases/latest", owner, repo)
-    local code, body = request(path)
+    local code, body, headers = request(path)
     if code == 404 then return nil end
     if code ~= 200 then
         logger.warn("GitHub fetch latest release error", owner .. "/" .. repo, code, body)
+        local entry=fallbackEntry(repo,code,body,headers)
+        if entry then return entry.release or nil end
         return nil, { code = code, body = body }
     end
     local ok, parsed = pcall(json.decode, body)

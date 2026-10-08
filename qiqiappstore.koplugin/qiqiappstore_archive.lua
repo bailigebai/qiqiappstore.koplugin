@@ -5,6 +5,7 @@
 --   copyFile, removeTree, rename, and uniqueSuffix.
 -- Production uses KOReader's lfs/util together with os/io.
 
+local Policy = require("qiqiappstore_policy")
 local Archive = {}
 
 local MANIFEST = ".qiqiappstore-install-manifest"
@@ -197,9 +198,34 @@ function Archive.detect(reader, repo)
         if not has_main then return nil, "Could not locate main.lua beside _meta.lua in the archive." end
         return nil, "main.lua and _meta.lua must be in the same plugin directory."
     end
-    if #roots > 1 then return nil, "Archive contains multiple plugin directories." end
-
     local root = roots[1]
+    if #roots > 1 then
+        -- Scope freshly checks the repository before installation. Reuse that
+        -- exact directory identity when a release bundles companion plugins.
+        local layout = Policy.accepts(repo) and repo.qiqi_layout
+        local expected = type(layout) == "table" and layout.dirname or nil
+        local selected, matches = nil, 0
+        if valid_plugin_dirname(expected) then
+            for _, candidate in ipairs(roots) do
+                if basename(candidate) == expected then
+                    selected, matches = candidate, matches + 1
+                end
+            end
+        end
+        if matches ~= 1 then
+            return nil, "安装包包含多个插件，无法确定本项目的安装目录。请使用本项目的独立安装包。"
+        end
+        -- Extraction copies the selected root's contents. A nested companion
+        -- would also be copied, so refuse that layout instead of installing it.
+        local prefix = selected .. "/"
+        for _, candidate in ipairs(roots) do
+            if candidate ~= selected and candidate:sub(1, #prefix) == prefix then
+                return nil, "安装包目标目录内还包含其他插件，请使用本项目的独立安装包。"
+            end
+        end
+        root = selected
+    end
+
     local root_name = root ~= "" and basename(root) or nil
     local repo_name = repo and repo.name
     local plugin_dirname

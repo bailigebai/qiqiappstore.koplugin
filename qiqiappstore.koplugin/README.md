@@ -1,8 +1,20 @@
 # qiqi 应用商店 · qiqiappstore.koplugin
 
-版本：0.1.5。用于 KOReader，仅展示 GitHub 账号 **bailigebai** 下名称以 **`.koplugin`** 结尾的公开项目。
+版本：0.1.6。用于 KOReader，仅展示 GitHub 账号 **bailigebai** 下名称以 **`.koplugin`** 结尾的公开项目。
 
 后续上传的新插件符合上述命名规则后，在商店点“刷新缓存”即可发现，无须修改商店代码。不要求 topics、星标，也支持该账号的公开 fork；名称如 `demo.koplugin.zip` 不会被纳入。
+
+## v0.1.6 下载与更新路线修复
+
+发布安装包优先使用对应仓库中同名、同尺寸并有发布摘要的 ZIP 副本，地址固定到已检查的提交；没有副本时走 GitHub 官方附件 API。每次下载完成核对发布附件 SHA-256 与大小，失败删除临时文件，并在同一版本的其他官方入口间有限切换。用户选择镜像时继续使用所选镜像。`.sha256` 文件不再列为安装包。
+
+文件接收器独立保存每次下载时限，使用 KOReader 单调时钟，避免系统校时或共享超时变量提前中断；总预算仍为五分钟，不无限等待。当前设备“不到一分钟”的首次超时原因没有完整日志，因此不能断言已定位到具体网络层。
+
+组合安装包里有多个插件时，只有已检查的当前项目目标目录唯一匹配才安装该目录；不会顺带安装其他插件。重复目标、外账号、不安全路径或嵌套伴随插件仍拒绝。
+
+GitHub API 限流或临时连接失败时，可读取本仓库公开的 `catalog.json`，继续刷新、检查项目和读取版本。索引严格限定本账号公开 `.koplugin` 项目、完整文件树与发布地址，超过24小时拒绝。GitHub Actions 按小时触发更新索引（平台可能延迟），新增插件仍以仓库后缀自动纳入；API正常时立即发现，限流期间要等索引更新。401/404和实际范围不符不通过索引绕过。没有用户令牌随安装包发布。
+
+旧商店若连刷新也报403，请手动升级本商店，完全退出并重启KOReader。保留现有插件和配置，无需删除旧插件或清空缓存。
 
 ## v0.1.5 仓库检查失败后的恢复
 
@@ -36,7 +48,7 @@ GitHub 直连下的仓库源码下载改为访问官方 `codeload.github.com` ZI
 
 ## 解压安装
 
-1. 下载 `qiqiappstore.koplugin-v0.1.5.zip`，解压得到 `qiqiappstore.koplugin` 文件夹。
+1. 下载 `qiqiappstore.koplugin-v0.1.6.zip`，解压得到 `qiqiappstore.koplugin` 文件夹。
 2. 将整个文件夹放入设备的 `koreader/plugins/` 目录。Kindle 常见位置为 `/mnt/us/koreader/plugins/`；请以设备实际 KOReader 目录为准。
 3. 检查最终路径是 `koreader/plugins/qiqiappstore.koplugin/main.lua`。不要多套一层同名目录，也不要直接放 ZIP。
 4. 完全退出并重新启动 KOReader，在主菜单中找到“qiqi 应用商店”（英文环境为 qiqi App Store）。

@@ -1,4 +1,3 @@
-package.path = 'qiqiappstore.koplugin/?.lua;' .. package.path
 local response_code, response_headers, decoded = 403, {['x-ratelimit-remaining']='0'}, {}
 package.preload['json']=function()return {decode=function()return decoded end}end
 package.preload['logger']=function()return {dbg=function()end,warn=function()end}end

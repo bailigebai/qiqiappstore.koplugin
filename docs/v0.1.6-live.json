@@ -1,0 +1,47 @@
+[
+  {
+    "repo": "graydither.koplugin",
+    "asset": "graydither-0.3.1.zip",
+    "url": "https://raw.githubusercontent.com/bailigebai/graydither.koplugin/cc24c3bcd73f8abd8e3af7006e6f41c4f3dccab5/downloads/graydither-0.3.1.zip",
+    "size": 38522,
+    "sha256": "e02e48ea959080dcee14b3832160819bcf06c80d08f30f75e1871ce65839a5e9",
+    "version": "0.3.1",
+    "directory": "graydither.koplugin"
+  },
+  {
+    "repo": "legado.koplugin",
+    "asset": "legado.koplugin-v0.10.53-20261008.zip",
+    "url": "https://raw.githubusercontent.com/bailigebai/legado.koplugin/4d66042701bfb7014b9f2da5e76ea30c66d1d15e/downloads/legado.koplugin-v0.10.53-20261008.zip",
+    "size": 572593,
+    "sha256": "8023b7d668385e87397c32a588ea1c18febecd1bf3269b30bd5473afcf0ee558",
+    "version": "0.10.53",
+    "directory": "legado.koplugin"
+  },
+  {
+    "repo": "mangaweb.koplugin",
+    "asset": "mangaweb-0.8.84.zip",
+    "url": "https://raw.githubusercontent.com/bailigebai/mangaweb.koplugin/cc7c5ce1a3b2046a97a4d1821ea86cd646f1644d/downloads/mangaweb-0.8.84.zip",
+    "size": 195649,
+    "sha256": "927970796954119c00ef41270750fb97f2b23b81f397237e90c2a7dd94772cc6",
+    "version": "0.8.84",
+    "directory": "mangaweb.koplugin"
+  },
+  {
+    "repo": "webdavmanga.koplugin",
+    "asset": "webdavmanga-repair-0.4.18-graydither-0.3.1.zip",
+    "url": "https://raw.githubusercontent.com/bailigebai/webdavmanga.koplugin/fd7e1b61bcd486c951a69f296627f4b1472a5da3/downloads/webdavmanga-repair-0.4.18-graydither-0.3.1.zip",
+    "size": 918001,
+    "sha256": "9b6160323809e15102cae20c7c09e9b9be8bae308dd3781aa3bf663dee00dc4c",
+    "version": "0.4.18",
+    "directory": "webdavmanga.koplugin"
+  },
+  {
+    "repo": "webdavmanga.koplugin",
+    "asset": "webdavmanga.koplugin-v0.4.18-20261008-cache-size-fix.zip",
+    "url": "https://raw.githubusercontent.com/bailigebai/webdavmanga.koplugin/fd7e1b61bcd486c951a69f296627f4b1472a5da3/downloads/webdavmanga.koplugin-v0.4.18-20261008-cache-size-fix.zip",
+    "size": 874527,
+    "sha256": "7dce1c8c3c23f42f81f17d5f2a3d676a5672cb92d65e861f3066c67cfb7961c1",
+    "version": "0.4.18",
+    "directory": "webdavmanga.koplugin"
+  }
+]

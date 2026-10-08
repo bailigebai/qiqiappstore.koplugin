@@ -101,6 +101,7 @@ local PluginPaths = require("qiqiappstore_plugin_paths")
 local InstallHelpers = require("qiqiappstore_install_helpers")
 InstallHelpers.Policy = require("qiqiappstore_policy")
 InstallHelpers.Archive = require("qiqiappstore_archive")
+InstallHelpers.Packages = require("qiqiappstore_packages")
 local PATCHES_ROOT = DataStorage:getDataDir() .. "/patches"
 
 local QiqiAppStore = WidgetContainer:extend{
@@ -5825,7 +5826,7 @@ function QiqiAppStore:promptPluginInstallOptions(repo, release_override)
             for _, asset in ipairs(assets) do
                 local name = asset and asset.name
                 local url = asset and asset.browser_download_url
-                if name and url then
+                if type(name) == "string" and name:lower():match("%.zip$") and url then
                     table.insert(custom_assets, asset)
                 end
             end
@@ -6278,7 +6279,8 @@ function QiqiAppStore:installPluginFromReleaseAsset(repo, release, asset)
 
         local progress = InfoMessage:new{ text = _("Downloading release asset…"), timeout = 0 }
         UIManager:show(progress)
-        local ok, err = downloadToFile(url, zip_path)
+        local plan = InstallHelpers.Packages.plan(repo, asset, Mirror.getCurrentPrefix() ~= "")
+        local ok, err = downloadToFile(plan or url, zip_path)
         UIManager:close(progress)
         if not ok then
             util.removeFile(zip_path)
@@ -8939,7 +8941,9 @@ function QiqiAppStore:renderRepoLines(descriptors)
 end
 
 downloadToFile = function(url, local_path)
-    url = Mirror.apply(url)
+    local plan = type(url) == 'table' and url or nil
+    local urls = plan and plan.urls or {url}
+    local now = Net.now or os.time
     local dir = local_path:match("^(.*)/")
     if dir and dir ~= "" then
         util.makePath(dir)
@@ -8947,10 +8951,11 @@ downloadToFile = function(url, local_path)
     -- The sink budget and the TLS/socket wait are distinct. A release redirect
     -- opens another TLS connection, which can exceed the default 15-second wait.
     -- Retry only transient GET failures, once, inside the original 5-minute budget.
-    local deadline = os.time() + 300
+    local deadline = now() + 300
     local last_error
-    for attempt = 1, 2 do
-        local remaining = deadline - os.time()
+    for attempt = 1, math.max(2,#urls) do
+        url = Mirror.apply(urls[math.min(attempt,#urls)])
+        local remaining = deadline - now()
         if remaining <= 0 then return false, last_error or "sink timeout" end
         local file, err = io.open(local_path, "wb")
         if not file then
@@ -8962,26 +8967,36 @@ downloadToFile = function(url, local_path)
             redirect = true,
             headers = {
                 ["User-Agent"] = socketutil.USER_AGENT,
-                ["Accept"] = "application/zip, application/octet-stream",
+                ["Accept"] = "application/octet-stream",
             },
-        }, file, math.min(45, remaining), remaining)
+        }, file, math.min(45, remaining), plan and #urls>1 and math.min(120,remaining) or remaining)
 
         -- The sink may already have closed the handle. Also close on handshake
         -- and mid-stream errors before deleting or reopening the partial archive.
         pcall(file.close, file)
-        if code == 200 and headers then return true end
+        if code == 200 and headers then
+            if plan then
+                local valid,verify_err = InstallHelpers.Packages.verify(local_path,plan)
+                if valid then return true end
+                code,status = 'invalid package',verify_err
+            else
+                return true
+            end
+        end
         util.removeFile(local_path)
 
         local reason = code or status
         local transient = reason == "wantread" or reason == "wantwrite"
             or reason == socketutil.TIMEOUT_CODE
+        local alternate = attempt < #urls and (transient or reason=='sink timeout' or reason=='invalid package'
+            or reason==403 or reason==404 or reason==429 or reason==502 or reason==503 or reason==504)
         last_error = status or code or "network error"
         if transient then
             last_error = "下载连接等待超时（" .. tostring(reason)
                 .. "）。下载入口：" .. (url:match("^https?://([^/?#]+)") or "未知")
                 .. "。请检查网络，或在商店设置中选择可用的下载来源后重试。"
         end
-        if not transient or attempt == 2 then return false, last_error end
+        if not alternate and (not transient or attempt >= math.max(2,#urls)) then return false, last_error end
     end
     return false, last_error
 end

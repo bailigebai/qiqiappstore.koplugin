@@ -1,4 +1,3 @@
-package.path = 'qiqiappstore.koplugin/?.lua;' .. package.path
 local Scope = require('qiqiappstore_scope')
 local calls, actions, installs = 0, 0, 0
 local failure = true
