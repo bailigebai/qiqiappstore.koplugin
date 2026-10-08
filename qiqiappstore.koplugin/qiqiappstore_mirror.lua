@@ -164,7 +164,14 @@ function Mirror.apply(url)
         return url
     end
     local prefix = Mirror.getCurrentPrefix()
+    local owner, repo_name, ref = url:match("^https://api%.github%.com/repos/([^/]+)/([^/]+)/zipball/?([^?#]*)$")
+    if ref == "" then ref = "HEAD" end
     if not prefix or prefix == "" then
+        -- Public repository ZIPs are served here. Keep the checked revision but
+        -- skip the API request and its extra redirect/TLS connection on devices.
+        if owner and repo_name then
+            return string.format("https://codeload.github.com/%s/%s/zip/%s", owner, repo_name, ref)
+        end
         return url
     end
     -- Avoid duplicate prefixing
@@ -175,11 +182,7 @@ function Mirror.apply(url)
         return url
     end
     -- Convert GitHub's API zipball URL to a form supported by download mirrors.
-    local owner, repo_name, ref = url:match("^https://api%.github%.com/repos/([^/]+)/([^/]+)/zipball/?([^?#]*)$")
     if owner and repo_name then
-        if ref == "" then
-            ref = "HEAD"
-        end
         url = string.format("https://github.com/%s/%s/archive/%s.zip", owner, repo_name, ref)
     end
     return prefix .. url

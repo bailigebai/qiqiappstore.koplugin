@@ -1,0 +1,20 @@
+[
+  {
+    "repo": "mangaweb.koplugin",
+    "installable": true,
+    "directory": "mangaweb.koplugin",
+    "version": "0.8.84",
+    "commit": "916e61139bb0d141feea7409be2433f29eba6de3",
+    "download_url": "https://codeload.github.com/bailigebai/mangaweb.koplugin/zip/916e61139bb0d141feea7409be2433f29eba6de3",
+    "zip_bytes": 240156
+  },
+  {
+    "repo": "webdavmanga.koplugin",
+    "installable": true,
+    "directory": "webdavmanga.koplugin",
+    "version": "0.4.18",
+    "commit": "3fe6692b33a8755beaf89e941398ce7809b3b5a7",
+    "download_url": "https://codeload.github.com/bailigebai/webdavmanga.koplugin/zip/3fe6692b33a8755beaf89e941398ce7809b3b5a7",
+    "zip_bytes": 10689300
+  }
+]

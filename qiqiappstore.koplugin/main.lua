@@ -8978,7 +8978,8 @@ downloadToFile = function(url, local_path)
         last_error = status or code or "network error"
         if transient then
             last_error = "下载连接等待超时（" .. tostring(reason)
-                .. "）。请检查网络，或在商店设置中选择可用的下载来源后重试。"
+                .. "）。下载入口：" .. (url:match("^https?://([^/?#]+)") or "未知")
+                .. "。请检查网络，或在商店设置中选择可用的下载来源后重试。"
         end
         if not transient or attempt == 2 then return false, last_error end
     end

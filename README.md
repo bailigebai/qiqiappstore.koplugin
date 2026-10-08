@@ -1,8 +1,14 @@
 # qiqi 应用商店 · qiqiappstore.koplugin
 
-版本：0.1.3。用于 KOReader，仅展示 GitHub 账号 **bailigebai** 下名称以 **`.koplugin`** 结尾的公开项目。
+版本：0.1.4。用于 KOReader，仅展示 GitHub 账号 **bailigebai** 下名称以 **`.koplugin`** 结尾的公开项目。
 
 后续上传的新插件符合上述命名规则后，在商店点“刷新缓存”即可发现，无须修改商店代码。不要求 topics、星标，也支持该账号的公开 fork；名称如 `demo.koplugin.zip` 不会被纳入。
+
+## v0.1.4 仓库下载链路调整
+
+GitHub 直连下的仓库源码下载改为访问官方 `codeload.github.com` ZIP 服务，保留安装前检查得到的提交引用，省去 API 压缩包接口的额外跳转。用户选择镜像时继续使用镜像支持的 GitHub archive URL，不自动切换第三方来源。发布附件的下载地址不变。沿用单次 45 秒、整体 300 秒预算及临时错误重试一次。
+
+连接失败的提示增加“下载入口”域名，便于判断设备当前连的是 GitHub 官方服务还是用户选择的镜像。升级后必须完全退出并重启 KOReader，再进行仓库下载。持续 timeout 可能是网络访问不到下载节点；本次未获得用户设备日志，不能认定设备上的具体失败节点，真机验收仍待完成。
 
 ## v0.1.3 TLS 连接超时修复
 
@@ -22,7 +28,7 @@
 
 ## 解压安装
 
-1. 下载 [qiqiappstore.koplugin-v0.1.3.zip](https://github.com/bailigebai/qiqiappstore.koplugin/releases/download/v0.1.3/qiqiappstore.koplugin-v0.1.3.zip)，解压得到 `qiqiappstore.koplugin` 文件夹。
+1. 下载 [qiqiappstore.koplugin-v0.1.4.zip](https://github.com/bailigebai/qiqiappstore.koplugin/releases/download/v0.1.4/qiqiappstore.koplugin-v0.1.4.zip)，解压得到 `qiqiappstore.koplugin` 文件夹。
 2. 将整个文件夹放入设备的 `koreader/plugins/` 目录。Kindle 常见位置为 `/mnt/us/koreader/plugins/`；请以设备实际 KOReader 目录为准。
 3. 检查最终路径是 `koreader/plugins/qiqiappstore.koplugin/main.lua`。不要多套一层同名目录，也不要直接放 ZIP。
 4. 完全退出并重新启动 KOReader，在主菜单中找到“qiqi 应用商店”（英文环境为 qiqi App Store）。
@@ -69,8 +75,8 @@ GitHub 请求失败或限流时保留原项目缓存，稍后刷新重试。可�
 
 ## 开发与来源
 
-本仓库包含已发布安装包及对应运行源码。v0.1.3 发布前在 Lua 5.1、LuaJIT 2.1 共完成 20 组测试，包内 Lua 语法、模块完整性、可重复打包和凭据排除检查通过。文件下载回归测试见 `tests/download_timeout_test.lua`、`tests/tls_download_test.lua`，可在仓库根目录用 Lua 5.1 或 LuaJIT 执行。
+本仓库包含已发布安装包及对应运行源码。v0.1.4 发布前在 Lua 5.1、LuaJIT 2.1 共完成 22 组测试，包内 Lua 语法、模块完整性、可重复打包和凭据排除检查通过。下载回归测试在 `tests/` 中，可在仓库根目录用 Lua 5.1 或 LuaJIT 执行。
 
-详细验证记录见 [v0.1.3-verification.md](docs/v0.1.3-verification.md)。Kindle 真机网络环境仍需验收。
+已用新下载地址验证 WebDAV、MangaWeb 的实际源码 ZIP 完整性和插件识别。详细记录见 [v0.1.4-verification.md](docs/v0.1.4-verification.md)。用户设备的版本、下载来源和当前日志尚未确认，真机网络效果仍待验收。
 
 基于 [omer-faruq/appstore.koplugin](https://github.com/omer-faruq/appstore.koplugin) 1.14.0 定制，沿用 GPL-3.0。作者版权、参考提交与改动说明见 [UPSTREAM.md](UPSTREAM.md)，完整许可证见 [LICENSE](LICENSE)。
