@@ -9150,6 +9150,15 @@ function QiqiAppStore:promptRepoAction(repo)
         })
     end
 
+    if repo.kind == "plugin" and not repo.qiqi_layout then
+        table.insert(buttons_row, {
+            text = "重试检查",
+            callback = function()
+                UIManager:close(dialog)
+                self:retryRepoInspection(repo)
+            end,
+        })
+    end
     table.insert(buttons_row, {
         text = _("View README"),
         callback = function()

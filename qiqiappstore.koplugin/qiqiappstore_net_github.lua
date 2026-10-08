@@ -56,18 +56,43 @@ local function request(path, query)
     -- Without a deadline a single stalled connection hangs the interface for good: every
     -- one of these runs on the UI thread. The API answers in well under a second when it
     -- answers at all, so the large-content values are already generous.
-    local code, _, status = Net.requestToTable({
+    local code, response_headers, status = Net.requestToTable({
         url = target,
         headers = headers,
     }, response_body)
     if not code then
-        return status, ""
+        return status, "", response_headers
     end
     local body = table.concat(response_body)
     -- A timeout reports itself as a string where a status would be. Callers only ever
     -- compare against 200, so passing it through keeps them working and names the reason
     -- in their logs instead of turning it into a bare nil.
-    return tonumber(code) or code, body
+    return tonumber(code) or code, body, response_headers
+end
+
+-- Public diagnostics must not echo credentials or arbitrary response bodies.
+function GitHubClient.describeError(err)
+    local code = type(err) == 'table' and err.code or err
+    local headers = type(err) == 'table' and err.headers or {}
+    headers = type(headers) == 'table' and headers or {}
+    local body = type(err) == 'table' and err.body or ''
+    if code == 401 then return 'GitHub 授权失效（401），请检查商店的 GitHub Token 配置。' end
+    if code == 429 or (code == 403 and (tostring(headers['x-ratelimit-remaining']) == '0'
+        or tostring(body):lower():find('rate limit', 1, true))) then
+        local reset = tonumber(headers['x-ratelimit-reset'])
+        local when = reset and reset > 0 and reset < 4102444800 and os.date('%m-%d %H:%M', reset)
+        return 'GitHub 请求次数受限（' .. tostring(code) .. '）。'
+            .. (when and ('预计 ' .. when .. ' 后重试。') or '请稍后重试。')
+    end
+    if code == 403 then return 'GitHub 拒绝访问（403），请检查授权或稍后重试。' end
+    if code == 404 then return 'GitHub 找不到项目或文件（404），请刷新项目列表。' end
+    if code == 'decode' then return 'GitHub 返回的数据无法解析，请重试。' end
+    if type(code) == 'string' and (code:find('timeout',1,true) or code:find('wantread',1,true)
+        or code:find('wantwrite',1,true)) then
+        return '连接 api.github.com 超时或 TLS 连接未完成（' .. code .. '），请检查网络后重试。'
+    end
+    if type(code) == 'number' then return 'GitHub 请求失败（HTTP ' .. tostring(code) .. '），请稍后重试。' end
+    return '无法读取 GitHub 数据，请检查网络后重试。'
 end
 
 local function buildQuery(opts)
@@ -192,10 +217,10 @@ function GitHubClient.fetchRepoTree(owner, repo, ref)
     end
     ref = ref or "HEAD"
     local path = string.format("/repos/%s/%s/git/trees/%s", owner, repo, ref)
-    local code, body = request(path, "recursive=1")
+    local code, body, headers = request(path, "recursive=1")
     if code ~= 200 then
         logger.warn("GitHub fetch tree error", owner .. "/" .. repo, ref, code, body)
-        return nil, { code = code, body = body }
+        return nil, { code = code, body = body, headers = headers }
     end
     local ok, parsed = pcall(json.decode, body)
     if not ok then
@@ -211,14 +236,14 @@ function GitHubClient.fetchRepoMetadata(owner, repo)
         return nil, "missing owner/repo"
     end
     local path = string.format("/repos/%s/%s", owner, repo)
-    local code, body = request(path)
+    local code, body, headers = request(path)
     if code ~= 200 then
         logger.warn("GitHub fetch repo metadata error", owner .. "/" .. repo, code, body)
-        return nil, { code = code, body = body }
+        return nil, { code = code, body = body, headers = headers }
     end
     local ok, parsed = pcall(json.decode, body)
-    if not ok then
-        logger.warn("GitHub fetch repo metadata decode error", parsed)
+    if not ok or type(parsed) ~= 'table' then
+        logger.warn("GitHub fetch repo metadata decode error")
         return nil, "decode"
     end
     return parsed, nil

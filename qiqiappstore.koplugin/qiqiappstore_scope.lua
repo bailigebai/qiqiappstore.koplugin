@@ -14,16 +14,28 @@ function Scope.attach(Store, deps)
         if not allowed(repo) then return end
         if not fresh and repo.qiqi_layout then return repo.qiqi_layout end
         local metadata, err = GitHub.fetchRepoMetadata(Policy.owner, repo.name)
-        if not metadata or metadata.private ~= false or not Policy.accepts(metadata) then
+        if type(metadata) ~= 'table' then
             repo.qiqi_layout = nil
-            repo.qiqi_status = '无法确认项目仍属于本账号且为公开项目，请联网重试。'
+            repo.qiqi_inspection_error = true
+            repo.qiqi_status = '仓库信息校验失败：' .. GitHub.describeError(err) .. '\n可点击“重试检查”。'
             return nil, err
+        end
+        repo.qiqi_inspection_error = nil
+        if metadata.private ~= false or not Policy.accepts(metadata) then
+            repo.qiqi_layout = nil
+            repo.qiqi_status = '项目不再是本账号下的公开插件项目，不能安装。'
+            return nil
         end
         local tree, tree_err = GitHub.fetchRepoTree(Policy.owner, repo.name, metadata.default_branch or 'HEAD')
         local layout, reason = Policy.pluginFromTree(tree, repo.name)
         repo.qiqi_layout, repo.qiqi_status = layout, reason
         repo.qiqi_commit = tree and tree.sha
-        if tree_err then repo.qiqi_status = '无法检查安装文件，请稍后联网重试。' end
+        if tree_err or type(tree) ~= 'table' or tree.truncated or type(tree.tree) ~= 'table' then
+            repo.qiqi_layout = nil
+            repo.qiqi_inspection_error = true
+            repo.qiqi_status = '安装文件检查失败：' .. GitHub.describeError(tree_err or '文件列表不完整') .. '\n可点击“重试检查”。'
+            return nil, tree_err
+        end
         return layout
     end
 
@@ -82,7 +94,11 @@ function Scope.attach(Store, deps)
     function Store:promptRepoAction(repo)
         if not allowed(repo) then return end
         -- Cached descriptions remain accessible offline. Fresh checks gate mutations below.
-        if repo.qiqi_layout or repo.qiqi_status then return action(self,repo) end
+        if not repo.qiqi_inspection_error and (repo.qiqi_layout or repo.qiqi_status) then return action(self,repo) end
+        Net:runWhenOnline(function() inspect(repo,true);action(self,repo) end)
+    end
+    function Store:retryRepoInspection(repo)
+        if not allowed(repo) then return end
         Net:runWhenOnline(function() inspect(repo,true);action(self,repo) end)
     end
     local options = Store.promptPluginInstallOptions

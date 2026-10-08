@@ -1,0 +1,17 @@
+{
+  "legado.koplugin": {
+    "public": true,
+    "owner": "bailigebai",
+    "default_branch": "main"
+  },
+  "webdavmanga.koplugin": {
+    "public": true,
+    "owner": "bailigebai",
+    "default_branch": "main"
+  },
+  "mangaweb.koplugin": {
+    "public": true,
+    "owner": "bailigebai",
+    "default_branch": "main"
+  }
+}

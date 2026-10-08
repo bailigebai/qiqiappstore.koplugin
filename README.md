@@ -1,8 +1,16 @@
 # qiqi 应用商店 · qiqiappstore.koplugin
 
-版本：0.1.4。用于 KOReader，仅展示 GitHub 账号 **bailigebai** 下名称以 **`.koplugin`** 结尾的公开项目。
+版本：0.1.5。用于 KOReader，仅展示 GitHub 账号 **bailigebai** 下名称以 **`.koplugin`** 结尾的公开项目。
 
 后续上传的新插件符合上述命名规则后，在商店点“刷新缓存”即可发现，无须修改商店代码。不要求 topics、星标，也支持该账号的公开 fork；名称如 `demo.koplugin.zip` 不会被纳入。
+
+## v0.1.5 仓库检查失败后的恢复
+
+修复仓库信息检查一旦失败就记住失败状态、再次打开项目也不重试的问题。未确认安装文件的详情页新增“重试检查”，旧缓存中的失败状态也能手动重新检查，无须清空缓存。
+
+失败提示区分 API 连接超时/TLS 等待、401 授权失效、403 拒绝访问、403/429 限流、404 项目不可用和实际账号/公开性校验不通过。限流响应有恢复时间时显示该时间，不自动反复请求。响应正文和 Token 不显示在提示中。
+
+保留安装前实时检查；检查失败不能用旧安装信息绕过限制。只展示本账号公开的 `.koplugin` 项目。此修复解决已复现的失败状态无法恢复问题，不能保证设备网络能访问 GitHub；截图没有提供首次请求的具体错误，仍需真机确认。
 
 ## v0.1.4 仓库下载链路调整
 
@@ -28,7 +36,7 @@ GitHub 直连下的仓库源码下载改为访问官方 `codeload.github.com` ZI
 
 ## 解压安装
 
-1. 下载 [qiqiappstore.koplugin-v0.1.4.zip](https://github.com/bailigebai/qiqiappstore.koplugin/releases/download/v0.1.4/qiqiappstore.koplugin-v0.1.4.zip)，解压得到 `qiqiappstore.koplugin` 文件夹。
+1. 下载 [qiqiappstore.koplugin-v0.1.5.zip](https://github.com/bailigebai/qiqiappstore.koplugin/releases/download/v0.1.5/qiqiappstore.koplugin-v0.1.5.zip)，解压得到 `qiqiappstore.koplugin` 文件夹。
 2. 将整个文件夹放入设备的 `koreader/plugins/` 目录。Kindle 常见位置为 `/mnt/us/koreader/plugins/`；请以设备实际 KOReader 目录为准。
 3. 检查最终路径是 `koreader/plugins/qiqiappstore.koplugin/main.lua`。不要多套一层同名目录，也不要直接放 ZIP。
 4. 完全退出并重新启动 KOReader，在主菜单中找到“qiqi 应用商店”（英文环境为 qiqi App Store）。
@@ -75,8 +83,6 @@ GitHub 请求失败或限流时保留原项目缓存，稍后刷新重试。可�
 
 ## 开发与来源
 
-本仓库包含已发布安装包及对应运行源码。v0.1.4 发布前在 Lua 5.1、LuaJIT 2.1 共完成 22 组测试，包内 Lua 语法、模块完整性、可重复打包和凭据排除检查通过。下载回归测试在 `tests/` 中，可在仓库根目录用 Lua 5.1 或 LuaJIT 执行。
-
-已用新下载地址验证 WebDAV、MangaWeb 的实际源码 ZIP 完整性和插件识别。详细记录见 [v0.1.4-verification.md](docs/v0.1.4-verification.md)。用户设备的版本、下载来源和当前日志尚未确认，真机网络效果仍待验收。
+测试：`python tests/run.py`（宿主需要 Lupa，设备端无新依赖）。只读 GitHub 检查：`python scripts/check_live.py`。打包：`python scripts/package.py`。
 
 基于 [omer-faruq/appstore.koplugin](https://github.com/omer-faruq/appstore.koplugin) 1.14.0 定制，沿用 GPL-3.0。作者版权、参考提交与改动说明见 [UPSTREAM.md](UPSTREAM.md)，完整许可证见 [LICENSE](LICENSE)。
